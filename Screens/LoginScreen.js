@@ -1,3 +1,5 @@
+/* eslint-disable curly */
+/* eslint-disable react/self-closing-comp */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-unused-vars */
 import React, {useState} from 'react';
@@ -8,26 +10,51 @@ import {
   TextInput,
   StatusBar,
   Dimensions,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import RoundIconBtn from '../components/RoundIconBtn';
 import colors from '../misc/colors';
-const Intro = () => {
-  const [user, setUser] = useState();
+const Intro = ({onFinish}) => {
+  const [name, setname] = useState('');
   const handleOnChangeText = text => {
-    setUser(text);
+    setname(text);
   };
-  console.log(user);
+  console.log(name);
+
+  const handleSubmit = async () => {
+    const user = {name: name};
+    await AsyncStorage.setItem('user', JSON.stringify(user));
+    if (onFinish) onFinish();
+    // Alert.alert('Alert Title', 'alertMessage', [
+    //   {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+    //   {
+    //     text: 'OK',
+    //     onPress: () => {
+    //       console.log('Data Submit Sussefully');
+    //     },
+    //   },
+    // ]);
+  };
+
   return (
     <>
       <StatusBar hidden />
       <View style={Styles.container}>
         <Text style={Styles.inputTitle}> Please Enter Your's Name Here</Text>
         <TextInput
-          value={user}
+          value={name}
           onChangeText={handleOnChangeText}
           placeholder="Enter Your Name"
           style={Styles.TextInput}
         />
+        {name.trim().length >= 3 ? (
+          <RoundIconBtn
+            antIconName="arrowright"
+            onPress={handleSubmit}></RoundIconBtn>
+        ) : null}
       </View>
     </>
   );
@@ -51,6 +78,7 @@ const Styles = StyleSheet.create({
     fontSize: 25,
     borderRadius: 5,
     paddingLeft: 10,
+    marginBottom: 20,
   },
   inputTitle: {
     alignSelf: 'flex-start',
